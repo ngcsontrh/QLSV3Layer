@@ -14,7 +14,7 @@ namespace QLSV.Data
 {
     public class NHibernateHelper
     {
-        internal static ISession OpenSession()
+        public static ISession OpenSession()
         {
             string connectionString =
                 "Data Source=.;" +

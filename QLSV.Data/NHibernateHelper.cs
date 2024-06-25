@@ -12,31 +12,26 @@ using System.Threading.Tasks;
 
 namespace QLSV.Data
 {
-    internal static class NHibernateHelper
+    public class NHibernateHelper
     {
-        private static ISessionFactory sessionFactory;
-        static NHibernateHelper()
+        internal static ISession OpenSession()
         {
-            string connectionString = 
+            string connectionString =
                 "Data Source=.;" +
                 "Initial Catalog=qlsv;" +
                 "Integrated Security=True;" +
                 "Encrypt=True;" +
                 "TrustServerCertificate=True";
 
-            sessionFactory = Fluently.Configure()
+            ISessionFactory sessionFactory = Fluently.Configure()
                 .Database(MsSqlConfiguration.MsSql2012.ConnectionString(connectionString))
                 .Mappings(m => m.FluentMappings
                     .AddFromAssemblyOf<Teacher>()
                     .AddFromAssemblyOf<Class>()
                     .AddFromAssemblyOf<Student>())
-                .ExposeConfiguration(cfg => new SchemaExport(cfg).Create(true, true))
                 .BuildSessionFactory();
-        }
 
-        public static void OpenSession()
-        {
-            sessionFactory.OpenSession();
+            return sessionFactory.OpenSession();
         }
     }
 }

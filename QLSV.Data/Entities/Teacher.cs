@@ -12,6 +12,6 @@ namespace QLSV.Data.Entities
         public virtual string FullName { get; set; } = null!;
         public virtual DateTime Birthday { get; set; }
 
-        public virtual List<Class> TeacherClasses { get; set; } = new List<Class>();
+        public virtual IList<Class> TeacherClasses { get; set; } = null!;
     }
 }

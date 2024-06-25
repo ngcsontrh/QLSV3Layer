@@ -13,6 +13,6 @@ namespace QLSV.Data.Entities
         public virtual string Subject { get; set; } = null!;
 
         public virtual Teacher ClassTeacher { get; set; } = null!;
-        public virtual List<Student> ClassStudents { get; set; } = new List<Student>();
+        public virtual IList<Student> ClassStudents { get; set; } = null!;
     }
 }

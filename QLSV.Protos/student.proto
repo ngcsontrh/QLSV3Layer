@@ -1,0 +1,88 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "QLSV.Protos";
+
+package student;
+
+service StudentGRPC {
+	rpc AddNewStudent (AddNewStudentRequest) returns (AddNewStudentReply);
+	rpc UpdateStudent (UpdateStudentRequest) returns (UpdateStudentReply);
+	rpc DeleteStudent (DeleteStudentRequest) returns (DeleteStudentReply);
+	rpc GetStudentDetailsById (GetStudentDetailsByIdRequest) returns (GetStudentDetailsByIdReply);
+	rpc GetAllStudents (GetAllStudentsRequest) returns (GetAllStudentsReply);
+}
+
+message StudentProfile {
+	optional int32 id = 1;
+	string full_name = 2;
+	string birthday = 3;
+	string address = 4;
+	optional string class_name = 5;
+}
+
+message StudentDetails {
+	int32 id = 1;
+	string full_name = 2;
+	string birthday = 3;
+	string address = 4;
+	int32 class_id = 5;
+	string class_name = 6;
+	string class_subject = 7;
+	int32 class_teacher_id = 8;
+	string class_teacher_full_name = 9;
+	string class_teacher_birthday = 10;
+}
+
+message GetAllStudentsRequest {}
+
+message GetStudentDetailsByIdRequest {
+	int32 id = 1;
+}
+
+message AddNewStudentRequest {
+	string full_name = 1;
+	string birthday = 2;
+	string address = 3;
+	int32 class_id = 4;
+}
+
+message UpdateStudentRequest {
+	int32 id = 1;
+	optional string full_name = 2;
+	optional string birthday = 3;
+	optional string address = 4;
+	optional int32 class_id = 5;
+}
+
+message DeleteStudentRequest {
+	int32 id = 1;
+}
+
+message GetStudentDetailsByIdReply {
+	bool is_exists = 1;
+	optional StudentDetails student_details = 2;
+	optional string message = 3;
+}
+
+message GetAllStudentsReply {
+	bool is_exists = 1;
+	repeated StudentProfile students = 2;
+	optional string message = 3;
+}
+
+message AddNewStudentReply {
+	bool success = 1;
+	optional StudentProfile student = 2;
+	optional string message = 3;
+}
+
+message UpdateStudentReply {
+	bool success = 1;
+	optional StudentProfile student = 2;
+	optional string message = 3;
+}
+
+message DeleteStudentReply {
+	bool success = 1;
+	optional string message = 2;
+}

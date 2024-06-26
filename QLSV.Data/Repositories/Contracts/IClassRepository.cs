@@ -9,8 +9,7 @@ namespace QLSV.Data.Repositories.Contracts
 {
     public interface IClassRepository
     {
-        Task<List<Class>?> GetAllClassAsync();
+        Task<List<Class>?> GetAllClassesAsync();
         Task<Class?> GetClassByIdAsync(int id);
-        Task<string?> GetClassNameByIdAsync(int id);
     }
 }

@@ -11,7 +11,7 @@ namespace QLSV.Data.Repositories
 {
     public class ClassRepository : IClassRepository
     {
-        public async Task<List<Class>?> GetAllClassAsync()
+        public async Task<List<Class>?> GetAllClassesAsync()
         {
             using (var session = NHibernateHelper.OpenSession())
             {
@@ -29,20 +29,6 @@ namespace QLSV.Data.Repositories
                 using (var transaction = session.BeginTransaction())
                 {
                     return await session.GetAsync<Class>(id);
-                }
-            }
-        }
-
-        public async Task<string?> GetClassNameByIdAsync(int id)
-        {
-            using (var session = NHibernateHelper.OpenSession())
-            {
-                using (var transaction = session.BeginTransaction())
-                {
-                    return await session.QueryOver<Class>()
-                        .Where(c => c.Id == id)
-                        .Select(c => c.Name)
-                        .SingleOrDefaultAsync<string>();
                 }
             }
         }

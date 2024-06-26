@@ -1,7 +1,6 @@
 ﻿using NHibernate.Linq;
 using QLSV.Data.Entities;
 using QLSV.Data.Repositories.Contracts;
-using QLSV.DTO.StudentDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,48 +42,31 @@ namespace QLSV.Data.Repositories
             }
         }
 
-        public async Task<List<GetAllStudentDTO>?> GetAllStudentsAsync()
+        public async Task<List<Student>?> GetAllStudentsAsync()
         {
             using (var session = NHibernateHelper.OpenSession())
             {
                 using (var transaction = session.BeginTransaction())
                 {
-                    return await session.Query<Student>()
+                    List<Student> students = await session.Query<Student>()
                         .Fetch(s => s.StudentClass)
-                        .Select(s => new GetAllStudentDTO
-                        {
-                            Id = s.Id,
-                            Address = s.Address,
-                            Birthday = s.Birthday.ToShortDateString(),
-                            ClassName = s.StudentClass.Name,
-                            FullName = s.FullName,
-                        })
                         .ToListAsync();
+                    return students;
                 }
             }
         }
 
-        public async Task<GetDetailStudentByIdDTO?> GetDetailStudentByIdAsync(int id)
+        public async Task<Student?> GetStudentDetailsByIdAsync(int id)
         {
             using (var session = NHibernateHelper.OpenSession())
             {
                 using (var transaction = session.BeginTransaction())
                 {
-                    return await session.Query<Student>()
+                    Student student = await session.Query<Student>()
                         .Fetch(s => s.StudentClass)
                         .ThenFetch(c => c.ClassTeacher)
-                        .Select(s => new GetDetailStudentByIdDTO
-                        {
-                            Id= s.Id,
-                            Address = s.Address,
-                            Birthday = s.Birthday.ToShortDateString(),
-                            ClassName = s.StudentClass.Name,
-                            FullName = s.FullName,
-                            ClassSubject = s.StudentClass.Subject,
-                            ClassTeacherFullName = s.StudentClass.ClassTeacher.FullName,
-                            ClassTeacherBirthday = s.StudentClass.ClassTeacher.Birthday.ToShortDateString(),
-                        })
                         .FirstOrDefaultAsync(s => s.Id == id);
+                    return student;
                 }
             }
         }
@@ -95,7 +77,11 @@ namespace QLSV.Data.Repositories
             {
                 using (var transaction = session.BeginTransaction())
                 {
-                    return await session.GetAsync<Student>(id);
+                    Student student = await session.Query<Student>()
+                        .Fetch(s => s.StudentClass)
+                        .ThenFetch(c => c.ClassTeacher)
+                        .FirstOrDefaultAsync(s => s.Id == id);
+                    return student;
                 }
             }
         }
@@ -108,6 +94,18 @@ namespace QLSV.Data.Repositories
                 {
                     await session.UpdateAsync(student);
                     await transaction.CommitAsync();
+                }
+            }
+        }
+
+        public async Task<int> CountStudentsAsync()
+        {
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                using (var transaction = session.BeginTransaction())
+                {
+                    int count = await session.Query<Student>().CountAsync();
+                    return count;
                 }
             }
         }

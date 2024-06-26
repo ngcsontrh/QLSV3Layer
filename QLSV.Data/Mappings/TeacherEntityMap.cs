@@ -12,6 +12,7 @@ namespace QLSV.Data.Mappings
     {
         public TeacherEntityMap()
         {
+            Table("teacher");
             Id(t => t.Id, "teacher_id");
             Map(t => t.FullName, "teacher_fullname").Not.Nullable();
             Map(t => t.Birthday, "teacher_birthday").Not.Nullable();

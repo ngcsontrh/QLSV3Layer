@@ -11,7 +11,7 @@ namespace QLSV.Data.Repositories
 {
     public class TeacherRepository : ITeacherRepository
     {
-        public async Task<List<Teacher>?> GetAllTeacherAsync()
+        public async Task<List<Teacher>?> GetAllTeachersAsync()
         {
             using (var session = NHibernateHelper.OpenSession())
             {

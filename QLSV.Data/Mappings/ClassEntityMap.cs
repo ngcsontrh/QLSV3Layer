@@ -12,6 +12,7 @@ namespace QLSV.Data.Mappings
     {
         public ClassEntityMap()
         {
+            Table("class");
             Id(c => c.Id, "class_id");
             Map(c => c.Name, "class_name").Not.Nullable();
             Map(c => c.Subject, "class_subject").Not.Nullable();

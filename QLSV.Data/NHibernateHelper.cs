@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace QLSV.Data
 {
-    public class NHibernateHelper
+    internal class NHibernateHelper
     {
         public static ISession OpenSession()
         {

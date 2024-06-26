@@ -10,6 +10,6 @@ namespace QLSV.Data.Repositories.Contracts
     public interface ITeacherRepository
     {
         Task<Teacher?> GetTeacherByIdAsync(int id);
-        Task<List<Teacher>?> GetAllTeacherAsync();
+        Task<List<Teacher>?> GetAllTeachersAsync();
     }
 }

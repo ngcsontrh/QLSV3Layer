@@ -1,9 +1,8 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using QLSV.Business.Protos;
 using QLSV.Data.Entities;
 using QLSV.Data.Repositories.Contracts;
-using QLSV.DTO.StudentDTO;
+using QLSV.Protos;
 
 namespace QLSV.Business.Services
 {
@@ -19,67 +18,69 @@ namespace QLSV.Business.Services
             _teacherRepository = teacherRepository;
         }
 
-        public override async Task<GetAllStudentReply> GetAllStudent(GetAllStudentRequest request, ServerCallContext context)
+        public override async Task<GetAllStudentsReply> GetAllStudents(GetAllStudentsRequest request, ServerCallContext context)
         {
-            GetAllStudentReply response = new GetAllStudentReply();
+            GetAllStudentsReply response = new GetAllStudentsReply();
             try
             {
-                List<GetAllStudentDTO>? students = await _studentRepository.GetAllStudentsAsync();
-
-                if(students == null || students.Count == 0)
+                List<Student>? students = await _studentRepository.GetAllStudentsAsync();
+                if (students == null || students.Count == 0)
                 {
                     throw new Exception($"There is no student in database");
                 }
 
-                response.IsExist = true;
+                response.IsExists = true;
                 foreach (var student in students)
                 {
-                    response.Students.Add(new GetStudentReply
+                    response.Students.Add(new StudentProfile
                     {
                         Id = student.Id,
                         FullName = student.FullName,
-                        Birthday = student.Birthday,
+                        Birthday = student.Birthday.ToShortDateString(),
                         Address = student.Address,
-                        ClassName = student.ClassName
+                        ClassName = student.StudentClass.Name
                     });
                 }
             }
             catch (Exception ex)
             {
-                response.IsExist= false;
+                response.IsExists = false;
                 response.Message = ex.Message;
             }
             return response;
         }
 
-        public override async Task<GetDetailStudentReply> GetDetailStudentById(GetDetailStudentByIdRequest request, ServerCallContext context)
+        public override async Task<GetStudentDetailsByIdReply> GetStudentDetailsById(GetStudentDetailsByIdRequest request, ServerCallContext context)
         {
-            GetDetailStudentReply response = new GetDetailStudentReply();
+            GetStudentDetailsByIdReply response = new GetStudentDetailsByIdReply();
             try
             {
-                GetDetailStudentByIdDTO? student = await _studentRepository.GetDetailStudentByIdAsync(request.Id);
-
+                Student? student = await _studentRepository.GetStudentDetailsByIdAsync(request.Id);
                 if(student == null)
                 {
                     throw new Exception($"There is no student_id = {request.Id}");
                 }
 
                 response.IsExists = true;
-                response.Id = student.Id;
-                response.FullName = student.FullName;
-                response.Birthday = student.Birthday;
-                response.Address = student.Address;
-                response.ClassName = student.ClassName;
-                response.ClassSubject = student.ClassSubject;
-                response.ClassTeacherFullName = student.ClassTeacherFullName;
-                response.ClassTeacherBirthday = student.ClassTeacherBirthday;
+                response.StudentDetails = new StudentDetails
+                {
+                    Id = student.Id,
+                    FullName = student.FullName,
+                    Birthday = student.Birthday.ToShortDateString(),
+                    Address = student.Address,
+                    ClassId = student.StudentClass.Id,
+                    ClassName = student.StudentClass.Name,
+                    ClassSubject = student.StudentClass.Subject,
+                    ClassTeacherId = student.StudentClass.ClassTeacher.Id,
+                    ClassTeacherFullName = student.StudentClass.ClassTeacher.FullName,
+                    ClassTeacherBirthday = student.StudentClass.ClassTeacher.Birthday.ToShortDateString()
+                };
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 response.IsExists = false;
                 response.Message = ex.Message;
             }
-
             return response;
         }
 
@@ -98,11 +99,18 @@ namespace QLSV.Business.Services
                     FullName = request.FullName,
                     Birthday = DateTime.ParseExact(request.Birthday, "dd/MM/yyyy", null),
                     Address = request.Address,
-                    StudentClass = studentClass
+                    StudentClass = studentClass,
                 };
                 await _studentRepository.AddNewStudentAsync(student);
+
                 response.Success = true;
-                response.StudentInfo = request;
+                response.Student = new StudentProfile
+                {
+                    FullName = student.FullName,
+                    Birthday = student.Birthday.ToShortDateString(),
+                    Address = student.Address,
+                    ClassName = student.StudentClass.Name,
+                };
             }
             catch(Exception ex)
             {
@@ -124,6 +132,7 @@ namespace QLSV.Business.Services
                     throw new Exception($"There is no student_id = {request.Id}");
                 }
 
+                await _studentRepository.DeleteStudentAsync(student);
                 response.Success = true;
             }
             catch(Exception ex )
@@ -158,7 +167,11 @@ namespace QLSV.Business.Services
                 await _studentRepository.UpdateStudentAsync(student);
 
                 response.Success = true;
-                response.StudentInfo = request;
+                response.Student.Id = student.Id;
+                response.Student.FullName = student.FullName;
+                response.Student.Birthday = student.Birthday.ToShortDateString();
+                response.Student.Address = student.Address;
+                response.Student.ClassName = student.StudentClass.Name;
             }
             catch (Exception ex)
             {

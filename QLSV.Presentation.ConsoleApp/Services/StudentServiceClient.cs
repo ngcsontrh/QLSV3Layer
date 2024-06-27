@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace QLSV.Presentation.ConsoleApp.Services
 {
-    public class StudentServiceClient
+    internal class StudentServiceClient
     {
         private readonly StudentGRPC.StudentGRPCClient _client;
 

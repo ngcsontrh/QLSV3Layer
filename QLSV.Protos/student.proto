@@ -17,7 +17,8 @@ message StudentProfile {
 	string full_name = 2;
 	string birthday = 3;
 	string address = 4;
-	optional string class_name = 5;
+	optional int32 class_id = 5;
+	optional string class_name = 6;
 }
 
 message StudentDetails {

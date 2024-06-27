@@ -6,7 +6,7 @@ using QLSV.Protos;
 
 namespace QLSV.Business.Services
 {
-    public class StudentService : StudentGRPC.StudentGRPCBase
+    internal class StudentService : StudentGRPC.StudentGRPCBase
     {
         private readonly IStudentRepository _studentRepository;
         private readonly ITeacherRepository _teacherRepository;
@@ -17,7 +17,7 @@ namespace QLSV.Business.Services
             _classRepository = classRepository;
             _teacherRepository = teacherRepository;
         }
-
+         
         public override async Task<GetAllStudentsReply> GetAllStudents(GetAllStudentsRequest request, ServerCallContext context)
         {
             GetAllStudentsReply response = new GetAllStudentsReply();
@@ -38,6 +38,7 @@ namespace QLSV.Business.Services
                         FullName = student.FullName,
                         Birthday = student.Birthday.ToShortDateString(),
                         Address = student.Address,
+                        ClassId = student.StudentClass.Id,
                         ClassName = student.StudentClass.Name
                     });
                 }
@@ -109,6 +110,7 @@ namespace QLSV.Business.Services
                     FullName = student.FullName,
                     Birthday = student.Birthday.ToShortDateString(),
                     Address = student.Address,
+                    ClassId = student.StudentClass.Id,
                     ClassName = student.StudentClass.Name,
                 };
             }
@@ -167,11 +169,14 @@ namespace QLSV.Business.Services
                 await _studentRepository.UpdateStudentAsync(student);
 
                 response.Success = true;
-                response.Student.Id = student.Id;
-                response.Student.FullName = student.FullName;
-                response.Student.Birthday = student.Birthday.ToShortDateString();
-                response.Student.Address = student.Address;
-                response.Student.ClassName = student.StudentClass.Name;
+                response.Student = new StudentProfile
+                {
+                    Id = student.Id,
+                    FullName = student.FullName,
+                    Birthday = student.Birthday.ToShortDateString(),
+                    Address = student.Address,
+                    ClassName = student.StudentClass.Name
+                };
             }
             catch (Exception ex)
             {
